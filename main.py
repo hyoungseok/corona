@@ -5,7 +5,7 @@ import time
 
 solution = json.load(open("data/solution.json", "r"))
 
-test_file = openpyxl.load_workbook("data/test.xlsx", data_only=True)
+test_file = openpyxl.load_workbook("input/test.xlsx", data_only=True)
 test_sheet = test_file["test"]
 
 name_map = {}
