@@ -1,6 +1,6 @@
 import json
 
-course_id = 10
+course_id = 11
 course_solution_prefix = "구선문 오답노트 수학(상)"
 
 solution = {}
