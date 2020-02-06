@@ -6,11 +6,11 @@ import PyPDF2
 import time
 
 
-def list_dir(token, course_id):
+def list_output(token, course_id):
     return os.listdir(f"output/{token}/course_{course_id}")
 
 
-def check_course_id(course_id):
+def valid_course_id(course_id):
     return f"course_{course_id}" in os.listdir("data")
 
 

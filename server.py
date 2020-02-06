@@ -2,7 +2,7 @@ import os
 import json
 import time
 from flask import Flask, render_template, request, redirect, url_for
-from util import check_course_id, read_excel
+from util import valid_course_id, read_excel, list_output
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
@@ -42,7 +42,7 @@ def submit():
             return f"""{{"status": "error", "message": "{message}"}}"""
 
         course_id = request.form.get("course_id")
-        if course_id is None or check_course_id(course_id):
+        if course_id is None or not valid_course_id(course_id):
             return """{{"status": "error", "message": "invalid course id"}}"""
 
         f = request.files[next(request.files.keys())]
@@ -58,15 +58,23 @@ def submit():
         _, row_count = read_excel(token, course_id)
         os.system(f"touch state/start_{token}_{course_id}_{row_count}")
 
-        return redirect(url_for("export"))
+        return redirect(url_for("export", token=token, course_id=course_id))
 
 
 @app.route("/export", methods=["GET"])
 def export():
-    token = request.args.get("token", "invalid token")
-    page = token_check(token, "export")
+    token = request.args.get("token")
+    message = token_check(token, "export")
+    if message is not "export":
+        return render_template("error.html", error_message=message)
 
-    return render_template(f"{page}.html")
+    course_id = request.args.get("course_id")
+    if course_id is None or not valid_course_id(course_id):
+        return """{{"status": "error", "message": "invalid course id"}}"""
+
+    pdf_list = list_output(token, course_id)
+
+    return render_template("export.html", pdf_list=pdf_list)
 
 
 if __name__ == "__main__":

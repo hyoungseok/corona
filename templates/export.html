@@ -17,6 +17,11 @@
 <body>
 <div class="center">
     download pdf, watch output directory
+    <ul>
+        {% for pdf_name in pdf_list %}
+        <li>{{ pdf_name }}</li>
+        {% endfor %}
+    </ul>
 </div>
 </body>
 </html>
