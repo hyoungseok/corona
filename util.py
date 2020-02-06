@@ -1,12 +1,13 @@
 import os
+import shutil
 import json
 import openpyxl
 import PyPDF2
 import time
 
 
-def list_dir(token):
-    return os.listdir(f"output/{token}")
+def list_dir(token, course_id):
+    return os.listdir(f"output/{token}/course_{course_id}")
 
 
 def check_course_id(course_id):
@@ -26,11 +27,10 @@ def export_pdf(token, course_id):
 
     output_path = f"output/{token}/course_{course_id}"
     if os.path.exists(output_path):
-        os.remove(output_path)
+        shutil.rmtree(output_path)
     os.makedirs(output_path)
 
     solution = json.load(open(f"data/course_{course_id}/solution.json", "r"))
-
     test_sheet, _ = read_excel(token, course_id)
 
     name_map = {}
@@ -55,15 +55,10 @@ def export_pdf(token, course_id):
         if wrong_answer_count > 0:
             timestamp = time.strftime("%Y%m%d-%H%M%S", time.localtime(time.time()))
             merge_name = f"{timestamp}-{tid}-{name_map[uid]}.pdf"
-            merger.write(f"output/{merge_name}")
+            merger.write(f"{output_path}/{merge_name}")
             merger.close()
             print(f"pdf exported: {merge_name}")
         else:
             print(f"all clear: {tid}-{name_map[uid]}")
 
     print("evaluation finished")
-
-
-wb = openpyxl.load_workbook("input/madin/course_11/test.xlsx", data_only=True)
-sh = wb["test"]
-print(sh.max_row)
