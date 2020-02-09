@@ -6,7 +6,7 @@ import util
 start_pattern = re.compile("^start_[a-zA-Z0-9]+$")
 
 print(f"startDaemon={int(time.time())}")
-while os.path.exists(f"status/daemon"):
+while os.path.exists(f"state/daemon"):
     time.sleep(5)
     print(f"aliveCheck={int(time.time())}")
     file_list = os.listdir("status")
