@@ -5,19 +5,42 @@
     <title>PDF exporter</title>
     <link rel="shortcut icon" href="#">
     <style>
-    .center {
+    .left {
         margin: auto;
-        text-align: center;
+        text-align: left;
         width: 80%;
         border: 0px;
         padding: 50px;
     }
-</style>
+
+    ul {
+        line-height: 40px;
+    }
+
+    li {
+        font-size: 15px;
+    }
+    </style>
 </head>
 <body>
-<div class="center">
-    http://13.124.139.118:8080/submit?token=xxxxx <br><br>
-    http://13.124.139.118:8080/export?token=xxxxx
+<a href="/">home</a>
+<div class="left">
+    <h2>AutoEval</h2>
+    <ul>
+        <li>
+            <form action="/submit" method="get">
+                Submit : token=<input type="text" name="token" size="10">
+                <input type="submit" value="Go">
+            </form>
+        </li>
+        <li>
+            <form action="/export" method="get">
+                Export : token=<input type="text" name="token" size="10"> &
+                course_id=<input type="text" name="course_id" size="10">
+                <input type="submit" value="Go">
+            </form>
+        </li>
+    </ul>
 </div>
 </body>
 </html>

@@ -5,17 +5,24 @@ import openpyxl
 import PyPDF2
 import time
 
-
-def list_output(token, course_id):
-    return os.listdir(f"output/{token}/course_{course_id}")
+token_json = json.load(open("token/token.json", "r"))
 
 
-def valid_course_id(course_id):
-    return f"course_{course_id}" in os.listdir("data")
+def valid_token(token):
+    return token_json.get(token) is not None
 
 
-def read_excel(token, course_id):
-    test_file = openpyxl.load_workbook(f"input/{token}/course_{course_id}/test.xlsx", data_only=True)
+def list_output(token):
+    os.makedirs(f"output/{token}", exist_ok=True)
+    return os.listdir(f"output/{token}")
+
+
+def valid_file_name(file_name, token):
+    return file_name in list_output(token)
+
+
+def read_excel(token):
+    test_file = openpyxl.load_workbook(f"input/{token}/test.xlsx", data_only=True)
     test_sheet = test_file["test"]
     row_count = test_sheet.max_row - 1
     if row_count > 5000:
@@ -23,15 +30,15 @@ def read_excel(token, course_id):
     return test_sheet, row_count
 
 
-def export_pdf(token, course_id):
+def export_pdf(token):
 
-    output_path = f"output/{token}/course_{course_id}"
+    output_path = f"output/{token}"
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
     os.makedirs(output_path)
 
-    solution = json.load(open(f"data/course_{course_id}/solution.json", "r"))
-    test_sheet, _ = read_excel(token, course_id)
+    solution = json.load(open(f"data/solution.json", "r"))
+    test_sheet, _ = read_excel(token)
 
     name_map = {}
     test_result = []

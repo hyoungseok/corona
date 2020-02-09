@@ -1,25 +1,12 @@
 import os
-import json
 import time
-from flask import Flask, render_template, request, redirect, url_for
-from util import valid_course_id, read_excel, list_output
+from flask import Flask, render_template, request, redirect, url_for, send_file
+from util import valid_token, read_excel, list_output, valid_file_name
 
 if not os.path.exists("templates"):
     os.mkdir("templates")
 
 app = Flask(__name__)
-token_json = json.load(open("token/token.json", "r"))
-
-
-def token_check(token, default_message):
-    if token is None:
-        return "invalid token error"
-
-    user = token_json.get(token)
-    if user is None:
-        return "user not found error"
-
-    return default_message
 
 
 @app.route("/")
@@ -31,50 +18,51 @@ def index():
 def submit():
     if request.method == "GET":
         token = request.args.get("token")
-        message = token_check(token, "submit")
-        if message is not "submit":
-            return render_template("error.html", error_message=message)
-        return render_template("submit.html")
+        if token is None or not valid_token(token):
+            return render_template("error.html", error_message="invalid token error")
+
+        return render_template("submit.html", token=token)
     else:
         token = request.form.get("token")
-        message = token_check(token, "valid")
-        if message is not "valid":
-            return f"""{{"status": "error", "message": "{message}"}}"""
+        if token is None or not valid_token(token):
+            return render_template("error.html", error_message="invalid token error")
 
-        course_id = request.form.get("course_id")
-        if course_id is None or not valid_course_id(course_id):
-            return """{{"status": "error", "message": "invalid course id"}}"""
+        f = request.files["test"]
+        if f.filename != "test.xlsx":
+            return render_template("error.html", error_message="invalid file name error")
 
-        f = request.files[next(request.files.keys())]
-        if f.filename is not "test.xlsx":
-            return """{{"status": "error", "message": "invalid file name"}}"""
-
-        input_path = f"input/{token}/course_{course_id}"
+        input_path = f"input/{token}"
         os.makedirs(input_path, exist_ok=True)
-        if os.path.exists(f"{input_path}/text.xlsx"):
+        if os.path.exists(f"{input_path}/test.xlsx"):
             timestamp = time.strftime("%Y%m%d-%H%M%S", time.localtime(time.time()))
-            os.rename(input_path, f"{input_path[:-5]}-{timestamp}.xlsx")
-        f.save(input_path)
-        _, row_count = read_excel(token, course_id)
-        os.system(f"touch state/start_{token}_{course_id}_{row_count}")
+            os.rename(f"{input_path}/test.xlsx", f"{input_path}/test-{timestamp}.xlsx")
+        f.save(f"{input_path}/test.xlsx")
+        os.system(f"touch state/start_{token}")
 
-        return redirect(url_for("export", token=token, course_id=course_id))
+        return redirect(url_for("export", token=token))
 
 
 @app.route("/export", methods=["GET"])
 def export():
     token = request.args.get("token")
-    message = token_check(token, "export")
-    if message is not "export":
-        return render_template("error.html", error_message=message)
+    if token is None or not valid_token(token):
+        return render_template("error.html", error_message="invalid token error")
 
-    course_id = request.args.get("course_id")
-    if course_id is None or not valid_course_id(course_id):
-        return """{{"status": "error", "message": "invalid course id"}}"""
+    _, total_count = read_excel(token)
+    pdf_list = list_output(token)
+    pdf_count = len(pdf_list)
 
-    pdf_list = list_output(token, course_id)
+    file_name = request.args.get("file_name")
+    if file_name is None or not valid_file_name(file_name, token):
+        return render_template(
+            "export.html",
+            total_count=total_count,
+            pdf_list=pdf_list,
+            pdf_count=pdf_count,
+            token=token,
+        )
 
-    return render_template("export.html", pdf_list=pdf_list)
+    return send_file(f"output/{token}/{file_name}", as_attachment=True)
 
 
 if __name__ == "__main__":

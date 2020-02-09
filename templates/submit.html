@@ -5,18 +5,24 @@
     <title>PDF exporter</title>
     <link rel="shortcut icon" href="#">
     <style>
-    .center {
+    .left {
         margin: auto;
-        text-align: center;
+        text-align: left;
         width: 80%;
         border: 0px;
         padding: 50px;
     }
-</style>
+    </style>
 </head>
 <body>
-<div class="center">
-    submit text.xlsx
+<a href="/">home</a>
+<div class="left">
+    <h2>AutoEval Upload</h2>
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="token" value="{{ token }}">
+        <input type="file" name="test" size="10">
+        <input type="submit" value="Upload">
+    </form>
 </div>
 </body>
 </html>
