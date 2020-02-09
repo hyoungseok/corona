@@ -11,6 +11,7 @@
         width: 80%;
         border: 0px;
         padding: 50px;
+        font-family: "Lucida Console", Monaco, monospace;
     }
 
     ol {
@@ -25,11 +26,11 @@
 <body>
 <a href="/">home</a>
 <div class="left">
-    <h2>AutoEval Download ({{ pdf_count }} / {{ total_count }})</h2>
+    <h2>Download PDF ({{ pdf_count }} / {{ total_count }})</h2>
     <ol>
         {% for pdf_name in pdf_list %}
         <li>
-            <a href="/export?token={{ token }}&course_id={{ course_id }}&file_name={{ pdf_name }}">
+            <a href="/export?token={{ token }}&file_name={{ pdf_name }}">
                 {{ pdf_name }}
             </a>
         </li>

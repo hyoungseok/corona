@@ -11,13 +11,14 @@
         width: 80%;
         border: 0px;
         padding: 50px;
+        font-family: "Lucida Console", Monaco, monospace;
     }
     </style>
 </head>
 <body>
 <a href="/">home</a>
 <div class="left">
-    <h2>AutoEval Upload</h2>
+    <h2>Upload "test.xlsx"</h2>
     <form action="/submit" method="post" enctype="multipart/form-data">
         <input type="hidden" name="token" value="{{ token }}">
         <input type="file" name="test" size="10">
