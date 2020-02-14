@@ -17,3 +17,4 @@ while os.path.exists(f"state/daemon"):
         token = start_match[0].split("_")[-1]
         os.rename(f"state/start_{token}", f"state/finish_{token}")
         util.export_pdf(token)
+        util.zip_all(token)

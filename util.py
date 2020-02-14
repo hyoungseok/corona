@@ -4,6 +4,7 @@ import json
 import openpyxl
 import PyPDF2
 import time
+import zipfile
 
 token_json = json.load(open("token/token.json", "r"))
 
@@ -31,7 +32,6 @@ def read_excel(token):
 
 
 def export_pdf(token):
-
     output_path = f"output/{token}"
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
@@ -69,3 +69,21 @@ def export_pdf(token):
             print(f"all clear: {tid}-{name_map[uid]}")
 
     print("evaluation finished")
+
+
+def zip_all(token):
+    target_path = f"output/{token}"
+    target_zip = zipfile.ZipFile(target_path, "w")
+    for root, _, files in os.walk(target_path):
+        for file in files:
+            if file.endswith(".pdf"):
+                target_zip.write(
+                    os.path.join(root, file),
+                    os.path.relpath(os.path.join(root, file), file),
+                    compress_type=zipfile.ZIP_DEFLATED
+                )
+    target_zip.close()
+
+    print("zip finished")
+
+
