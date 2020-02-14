@@ -73,7 +73,7 @@ def export_pdf(token):
 
 def zip_all(token):
     target_path = f"output/{token}"
-    target_zip = zipfile.ZipFile(target_path, "w")
+    target_zip = zipfile.ZipFile(f"{target_path}/total.zip", "w")
     for root, _, files in os.walk(target_path):
         for file in files:
             if file.endswith(".pdf"):
