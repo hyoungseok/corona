@@ -79,7 +79,7 @@ def zip_all(token):
             if file.endswith(".pdf"):
                 target_zip.write(
                     os.path.join(root, file),
-                    os.path.relpath(os.path.join(root, file), file),
+                    file,
                     compress_type=zipfile.ZIP_DEFLATED
                 )
     target_zip.close()
