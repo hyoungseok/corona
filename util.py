@@ -15,7 +15,7 @@ def valid_token(token):
 
 def list_output(token):
     os.makedirs(f"output/{token}", exist_ok=True)
-    return os.listdir(f"output/{token}")
+    return sorted(os.listdir(f"output/{token}"))
 
 
 def valid_file_name(file_name, token):
